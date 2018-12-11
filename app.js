@@ -1,18 +1,26 @@
 const express = require('express')
 const app = express()
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/contractor');
 var exphbs = require('express-handlebars');
 
-let reviews = [
-  { title: "Great Review", movieTitle: "Batman II" },
-  { title: "Awesome Movie", movieTitle: "Titanic" }
-]
+const Review = mongoose.model('Review', {
+  title: String,
+  charityName: String
+});
 
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars')
 
 // INDEX
 app.get('/', (req, res) => {
-  res.render('reviews-index', { reviews: reviews });
+  Review.find()
+    .then(reviews => {
+      res.render('reviews-index', { reviews: reviews });
+    })
+    .catch(err => {
+      console.log(err);
+    })
 })
 
 app.listen(3000, () => {
