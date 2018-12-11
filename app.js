@@ -2,10 +2,14 @@ const express = require('express')
 const app = express()
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/contractor');
+const bodyParser = require('body-parser');
 var exphbs = require('express-handlebars');
+
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const Review = mongoose.model('Review', {
   title: String,
+  description: String,
   charityName: String
 });
 
@@ -21,6 +25,16 @@ app.get('/', (req, res) => {
     .catch(err => {
       console.log(err);
     })
+})
+
+// CREATE
+app.post('/reviews', (req, res) => {
+  Review.create(req.body).then((review) => {
+    console.log(review);
+    res.redirect('/');
+  }).catch((err) => {
+    console.log(err.message);
+  })
 })
 
 app.listen(3000, () => {
